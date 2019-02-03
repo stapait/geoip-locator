@@ -2,24 +2,23 @@ package main
 
 import (
 	"fmt"
+	"geoip-locator/api"
 	"geoip-locator/geoip"
-	"os"
+	"net/http"
 )
 
-const countriesCSVFile = "files/GeoLite2-Country-Locations-en.csv"
-const countryBlocksCSVFile = "files/GeoLite2-Country-Blocks-IPv4.csv"
+const (
+	countriesCSVFile     = "files/GeoLite2-Country-Locations-en.csv"
+	countryBlocksCSVFile = "files/GeoLite2-Country-Blocks-IPv4.csv"
+	serverPort           = 8080
+)
 
 func main() {
 	geoip.LoadCountriesFromCSV(countriesCSVFile)
 	geoip.LoadIPsFromCSV(countryBlocksCSVFile)
 
-	ip := "222.223.222.222"
-	country, err := geoip.IPToCountry(ip)
+	api.LoadRoutes()
 
-	if err != nil {
-		fmt.Printf("Error: %v", err)
-		os.Exit(0)
-	}
-
-	fmt.Printf("%+v", country)
+	fmt.Println("Server listening at port", serverPort)
+	http.ListenAndServe(fmt.Sprintf(":%d", serverPort), nil)
 }
